@@ -2,6 +2,8 @@ package com.example.demorecipeapp.controller;
 
 import com.example.demorecipeapp.model.Recipe;
 import com.example.demorecipeapp.services.RecipeService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,8 +19,12 @@ public class RecipeController {
     }
 
     @PostMapping
-    public Recipe addRecipe(@RequestBody Recipe recipe) {
-        return recipeService.add(recipe);
+    public ResponseEntity<?> addRecipe(@RequestBody Recipe recipe) {
+        if (StringUtils.isBlank(recipe.getTitle())) {
+            return ResponseEntity.badRequest().body("Отсуствует название рецепта");
+//            return ResponseEntity.badRequest().build(); - в этом случае можно не менять тип жденерика на ?
+        }
+        return ResponseEntity.ok(recipeService.add(recipe));
     }
 
     @GetMapping("/{id}")
