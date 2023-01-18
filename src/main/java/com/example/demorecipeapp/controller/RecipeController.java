@@ -19,10 +19,9 @@ public class RecipeController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addRecipe(@RequestBody Recipe recipe) {
+    public ResponseEntity<Recipe> addRecipe(@RequestBody Recipe recipe) {
         if (StringUtils.isBlank(recipe.getTitle())) {
-            return ResponseEntity.badRequest().body("Отсуствует название рецепта");
-//            return ResponseEntity.badRequest().build(); - в этом случае можно не менять тип жденерика на ?
+            return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(recipeService.add(recipe));
     }
