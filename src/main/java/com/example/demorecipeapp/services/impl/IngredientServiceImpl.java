@@ -3,13 +3,12 @@ package com.example.demorecipeapp.services.impl;
 import com.example.demorecipeapp.model.Ingredient;
 import com.example.demorecipeapp.services.IngredientService;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
