@@ -1,6 +1,7 @@
 package com.example.demorecipeapp.services;
 
 import com.example.demorecipeapp.model.Recipe;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -14,4 +15,8 @@ public interface RecipeService {
     Recipe remove(long id);
 
     List<Recipe> getAll();
+
+    byte[] getAllInBytes();
+
+    void importRecipes(MultipartFile recipes);
 }

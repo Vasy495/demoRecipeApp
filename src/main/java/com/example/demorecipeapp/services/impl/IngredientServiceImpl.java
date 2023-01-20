@@ -1,14 +1,19 @@
 package com.example.demorecipeapp.services.impl;
 
 import com.example.demorecipeapp.model.Ingredient;
+import com.example.demorecipeapp.model.Recipe;
 import com.example.demorecipeapp.services.IngredientService;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
@@ -50,7 +55,7 @@ public class IngredientServiceImpl implements IngredientService {
         }
     }
 
-    private void writeDataToFile() {
+    private void writeDataToFile(Map<Long, Ingredient> ingredientMap) {
         try {
             byte[] bytes = objectMapper.writeValueAsBytes(ingredientMap);
             Files.write(path, bytes);
@@ -63,7 +68,7 @@ public class IngredientServiceImpl implements IngredientService {
     @Override
     public Ingredient add(Ingredient ingredient) {
         Ingredient newIngredient = ingredientMap.put(counter++, ingredient);
-        writeDataToFile();
+        writeDataToFile(ingredientMap);
         return newIngredient;
     }
 
@@ -76,7 +81,7 @@ public class IngredientServiceImpl implements IngredientService {
     public Ingredient update(long id, Ingredient ingredient) {
         if (ingredientMap.containsKey(id)) {
             Ingredient newIngredient = ingredientMap.put(id, ingredient);
-            writeDataToFile();
+            writeDataToFile(ingredientMap);
             return newIngredient;
         }
         return null;
@@ -85,7 +90,29 @@ public class IngredientServiceImpl implements IngredientService {
     @Override
     public Ingredient remove(long id) {
         Ingredient ingredient = ingredientMap.remove(id);
-        writeDataToFile();
+        writeDataToFile(ingredientMap);
         return ingredient;
+    }
+
+    @Override
+    public InputStreamResource getAllInBytes() {
+        try {
+            return new InputStreamResource(new FileInputStream(path.toFile()));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public void importIngredients(MultipartFile ingredients) {
+        try {
+            Map<Long, Ingredient> mapFromRequest = objectMapper.readValue(ingredients.getBytes(),
+                    new TypeReference<>() {
+                    });
+            writeDataToFile(mapFromRequest);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

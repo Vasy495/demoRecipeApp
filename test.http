@@ -7,28 +7,40 @@ POST http://localhost:8080/recipe
 content-type: application/json
 
 {
-  "id": 1,
-  "title": "Recipe 1",
-  "cookingTime": 30,
-  "Ingredients": [
-    {
-      "title": 1,
-      "quantity": 1,
-      "measuringUnit": "kg"
-    },
-    {
-      "title": 1,
-      "quantity": 1,
-      "measuringUnit": "kg"
-    },
-    {
-      "title": 1,
-      "quantity": 1,
-      "measuringUnit": "kg"
-    }
-  ],
-  "steps": [
-    "Step 1",
-    "Step 2"
-  ]
+  "0": {
+    "title": "Recipe 1",
+    "cookingTime": 30,
+    "Ingredients": [
+      {"title": 1,
+        "quantity": 1,
+        "measuringUnit": "kg"
+      }
+    ],
+    "steps": [
+      "Step 1",
+      "Step 2"
+    ]
+  }
 }
+
+###
+POST http://localhost:8080/recipe/import
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="recipes"; filename="importRecipes.json"
+Content-Type: application/json
+
+< ./importRecipes.json
+--WebAppBoundary--
+
+###
+POST http://localhost:8080/ingredient/import
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="ingredients"; filename="importIngredients.json"
+Content-Type: application/json
+
+< ./importIngredients.json
+--WebAppBoundary--
