@@ -67,4 +67,18 @@ public class RecipeController {
     public void importRecipes(MultipartFile recipes) {
         recipeService.importRecipes(recipes);
     }
+
+    @GetMapping("/export")
+    public ResponseEntity<byte[]> exportTxt() {
+
+        byte[] bytes = recipeService.exportTxt();
+        if (bytes == null) {
+            return ResponseEntity.internalServerError().build();
+        }
+        return ResponseEntity.ok()
+                .contentType(MediaType.TEXT_PLAIN)
+                .contentLength(bytes.length)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"info.txt\"")
+                .body(bytes);
+    }
 }

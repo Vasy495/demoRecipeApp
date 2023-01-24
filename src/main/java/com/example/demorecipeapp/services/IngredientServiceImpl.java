@@ -1,4 +1,4 @@
-package com.example.demorecipeapp.services.impl;
+package com.example.demorecipeapp.services;
 
 import com.example.demorecipeapp.model.Ingredient;
 import com.example.demorecipeapp.model.Recipe;

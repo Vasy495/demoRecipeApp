@@ -8,4 +8,8 @@ public class Ingredient {
     private int quantity;
     private String measuringUnit;
 
+    @Override
+    public String toString() {
+        return title + " - " + quantity + " " + measuringUnit;
+    }
 }
