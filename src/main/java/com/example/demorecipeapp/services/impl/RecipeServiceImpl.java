@@ -1,7 +1,8 @@
-package com.example.demorecipeapp.services;
+package com.example.demorecipeapp.services.impl;
 
 import com.example.demorecipeapp.model.Ingredient;
 import com.example.demorecipeapp.model.Recipe;
+import com.example.demorecipeapp.services.RecipeService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,17 +30,14 @@ public class RecipeServiceImpl implements RecipeService {
     private final Path pathToTxtTemplate;
     private final ObjectMapper objectMapper;
 
-    public RecipeServiceImpl(@Value("${application.file.recipes}") String path) {
+    public RecipeServiceImpl(@Value("${application.file.recipes}") String path, @Value("${application.file.txtRecipe}") String pathToTxtTemplate) {
         try {
             this.path = Paths.get(path);
-            this.pathToTxtTemplate = Paths.get(RecipeServiceImpl.class.getResource("recipesTemplate.txt").toURI());
+            this.pathToTxtTemplate = Paths.get(pathToTxtTemplate);//Paths.get(RecipeServiceImpl.class.getResource("recipesTemplate.txt").toURI());
             this.objectMapper = new ObjectMapper();
         } catch (InvalidPathException e) {
             e.printStackTrace();
             throw e;
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
         }
     }
 

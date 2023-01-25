@@ -3,6 +3,7 @@ package com.example.demorecipeapp.controller;
 import com.example.demorecipeapp.model.Ingredient;
 import com.example.demorecipeapp.model.Recipe;
 import com.example.demorecipeapp.services.IngredientService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -23,26 +24,47 @@ public class IngredientController {
 
 
     @PostMapping
+    @Operation(
+            summary = "Добавление нового ингредиента",
+            description = "Добавит новый ингредиент в приложение"
+
+    )
     public Ingredient addIngredient(@RequestBody Ingredient ingredient) {
         return ingredientService.add(ingredient);
     }
 
     @GetMapping("/{id}")
+    @Operation(
+            summary = "Отображение ингредиента по id",
+            description = "Выгрузит определенный ингредиент"
+    )
     public Ingredient getIngredient(@PathVariable("id") long id) {
         return ingredientService.get(id);
     }
 
     @PutMapping("/{id}")
+    @Operation(
+            summary = "Обновление ингрединета по id",
+            description = "Обновит определенный ингредиент"
+    )
     public Ingredient putIngredient(@PathVariable("id") long id, @RequestBody Ingredient ingredient) {
         return ingredientService.update(id, ingredient);
     }
 
     @DeleteMapping("/{id}")
+    @Operation(
+            summary = "Удаление ингрединета по id",
+            description = "Удалит определенный ингредиент"
+    )
     public Ingredient deleteIngredient(@PathVariable("id") long id) {
         return ingredientService.remove(id);
     }
 
     @GetMapping("/download")
+    @Operation(
+            summary = "Выгрузка всех игредиентов в формате json",
+            description = "Выгрузит все имеющиеся ингредиенты в определенном формате"
+    )
     public ResponseEntity<InputStreamResource> downloadRecipes() throws IOException {
         InputStreamResource inputStreamResource = ingredientService.getAllInBytes();
         if (inputStreamResource == null) {
@@ -55,6 +77,10 @@ public class IngredientController {
     }
 
     @PostMapping(value = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(
+            summary = "Загрузка всех игредиентов в формате json",
+            description = "Загрузит все ингредиенты в приложение"
+    )
     public void importRecipes(MultipartFile ingredients) {
         ingredientService.importIngredients(ingredients);
     }
