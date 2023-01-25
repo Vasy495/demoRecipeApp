@@ -1,5 +1,7 @@
 package com.example.demorecipeapp.services.impl;
 
+import com.example.demorecipeapp.exception.ExceptionForIngredient;
+import com.example.demorecipeapp.exception.ExceptionWithOperationFile;
 import com.example.demorecipeapp.model.Ingredient;
 import com.example.demorecipeapp.model.Recipe;
 import com.example.demorecipeapp.services.IngredientService;
@@ -40,11 +42,11 @@ public class IngredientServiceImpl implements IngredientService {
     }
 
     @PostConstruct
-    public void init() {
+    public void init() throws ExceptionWithOperationFile {
         readDataFromFile();
     }
 
-    private void readDataFromFile() {
+    private void readDataFromFile() throws ExceptionWithOperationFile {
         try {
             byte[] file = Files.readAllBytes(path); //Преобразуем файл в массив байт
             Map<Long, Ingredient> mapFromFile = objectMapper.readValue(file, new TypeReference<>() {
@@ -52,6 +54,7 @@ public class IngredientServiceImpl implements IngredientService {
             ingredientMap.putAll(mapFromFile);
         } catch (IOException e) {
             e.printStackTrace();
+            throw new ExceptionWithOperationFile("Ошибка чтения из файла");
         }
     }
 
@@ -66,32 +69,44 @@ public class IngredientServiceImpl implements IngredientService {
 
 
     @Override
-    public Ingredient add(Ingredient ingredient) {
+    public Ingredient add(Ingredient ingredient) throws ExceptionForIngredient, ExceptionWithOperationFile {
+        if (!ingredientMap.containsValue(ingredient)) {
         Ingredient newIngredient = ingredientMap.put(counter++, ingredient);
         writeDataToFile(ingredientMap);
         return newIngredient;
+        } else {
+            throw new ExceptionForIngredient("Такой ингредиент уже существует");
+        }
     }
 
     @Override
-    public Ingredient get(long id) {
-        return ingredientMap.get(id);
+    public Ingredient get(long id) throws ExceptionForIngredient {
+        if (ingredientMap.containsKey(id)) {
+            return ingredientMap.get(id);
+        } else {
+            throw new ExceptionForIngredient("Такого ингредиента нет!");
+        }
     }
 
     @Override
-    public Ingredient update(long id, Ingredient ingredient) {
+    public Ingredient update(long id, Ingredient ingredient) throws ExceptionForIngredient, ExceptionWithOperationFile {
         if (ingredientMap.containsKey(id)) {
             Ingredient newIngredient = ingredientMap.put(id, ingredient);
             writeDataToFile(ingredientMap);
             return newIngredient;
         }
-        return null;
+        throw new ExceptionForIngredient("Такого ингредиента нет!");
     }
 
     @Override
-    public Ingredient remove(long id) {
-        Ingredient ingredient = ingredientMap.remove(id);
-        writeDataToFile(ingredientMap);
-        return ingredient;
+    public Ingredient remove(long id) throws ExceptionWithOperationFile, ExceptionForIngredient {
+        if (ingredientMap.containsKey(id)) {
+            Ingredient ingredient = ingredientMap.remove(id);
+            writeDataToFile(ingredientMap);
+            return ingredient;
+        } else {
+            throw new ExceptionForIngredient("Такого ингрединета нет!");
+        }
     }
 
     @Override
@@ -105,7 +120,7 @@ public class IngredientServiceImpl implements IngredientService {
     }
 
     @Override
-    public void importIngredients(MultipartFile ingredients) {
+    public void importIngredients(MultipartFile ingredients) throws ExceptionWithOperationFile {
         try {
             Map<Long, Ingredient> mapFromRequest = objectMapper.readValue(ingredients.getBytes(),
                     new TypeReference<>() {
@@ -113,6 +128,7 @@ public class IngredientServiceImpl implements IngredientService {
             writeDataToFile(mapFromRequest);
         } catch (IOException e) {
             e.printStackTrace();
+            throw new ExceptionWithOperationFile("Ошибка загрузки ингредиентов из json");
         }
     }
 }

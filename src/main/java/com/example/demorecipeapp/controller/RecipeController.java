@@ -1,5 +1,6 @@
 package com.example.demorecipeapp.controller;
 
+import com.example.demorecipeapp.exception.ExceptionForRecipe;
 import com.example.demorecipeapp.model.Recipe;
 import com.example.demorecipeapp.services.RecipeService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,7 +35,7 @@ public class RecipeController {
             description = "Добавление нового рецепта в приложение"
 
     )
-    public ResponseEntity<Recipe> addRecipe(@RequestBody Recipe recipe) {
+    public ResponseEntity<Recipe> addRecipe(@RequestBody Recipe recipe) throws ExceptionForRecipe {
         if (StringUtils.isBlank(recipe.getTitle())) {
             return ResponseEntity.badRequest().build();
         }
@@ -47,7 +48,7 @@ public class RecipeController {
             description = "Выгрузит определенный рецепт"
 
     )
-    public Recipe getRecipe(@PathVariable("id") long id) {
+    public Recipe getRecipe(@PathVariable("id") long id) throws ExceptionForRecipe {
         return recipeService.get(id);
     }
 
@@ -67,7 +68,7 @@ public class RecipeController {
             description = "Обновит определенный рецепт"
 
     )
-    public Recipe putRecipe(@PathVariable("id") long id, @RequestBody Recipe recipe) {
+    public Recipe putRecipe(@PathVariable("id") long id, @RequestBody Recipe recipe) throws ExceptionForRecipe {
         return recipeService.update(id, recipe);
     }
 
@@ -76,7 +77,7 @@ public class RecipeController {
             summary = "Удаление рецпта по id",
             description = "Удалит определенный рецепт"
     )
-    public Recipe deleteRecipe(@PathVariable("id") long id) {
+    public Recipe deleteRecipe(@PathVariable("id") long id) throws ExceptionForRecipe {
         return recipeService.remove(id);
     }
 
@@ -104,7 +105,7 @@ public class RecipeController {
             description = "Загрузит рецепты в приложение"
 
     )
-    public void importRecipes(MultipartFile recipes) {
+    public void importRecipes(MultipartFile recipes) throws ExceptionForRecipe {
         recipeService.importRecipes(recipes);
     }
 

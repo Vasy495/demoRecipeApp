@@ -1,5 +1,7 @@
 package com.example.demorecipeapp.services.impl;
 
+import com.example.demorecipeapp.exception.ExceptionForRecipe;
+import com.example.demorecipeapp.exception.ExceptionWithOperationFile;
 import com.example.demorecipeapp.model.Ingredient;
 import com.example.demorecipeapp.model.Recipe;
 import com.example.demorecipeapp.services.RecipeService;
@@ -42,11 +44,11 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @PostConstruct
-    public void init() {
+    public void init() throws ExceptionWithOperationFile {
         readDataFromFile();
     }
 
-    private void readDataFromFile() {
+    private void readDataFromFile() throws ExceptionWithOperationFile {
         try {
             byte[] file = Files.readAllBytes(path);
             Map<Long, Recipe> mapFromFile = objectMapper.readValue(file, new TypeReference<>() {
@@ -54,6 +56,7 @@ public class RecipeServiceImpl implements RecipeService {
             recipeMap.putAll(mapFromFile);
         } catch (IOException e) {
             e.printStackTrace();
+            throw new ExceptionWithOperationFile("Ошибка чтения из файла");
         }
     }
 
@@ -69,32 +72,43 @@ public class RecipeServiceImpl implements RecipeService {
 
 
     @Override
-    public Recipe add(Recipe recipe) {
-        recipeMap.put(this.counter++, recipe);
-        writeDataToFile(recipeMap);
-        return recipe;
+    public Recipe add(Recipe recipe) throws ExceptionForRecipe {
+        if (!recipeMap.containsValue(recipe)) {
+            recipeMap.put(this.counter++, recipe);
+            writeDataToFile(recipeMap);
+            return recipe;
+        } else {
+            throw new ExceptionForRecipe("Такой рецепт уже существует!");
+        }
     }
 
     @Override
-    public Recipe get(long id) {
-        return recipeMap.get(id);
+    public Recipe get(long id) throws ExceptionForRecipe {
+        if (recipeMap.containsKey(id)) {
+            return recipeMap.get(id);
+        } else {
+            throw new ExceptionForRecipe("Такого рецепта нет!");
+        }
     }
 
     @Override
-    public Recipe update(long id, Recipe recipe) {
+    public Recipe update(long id, Recipe recipe) throws ExceptionForRecipe {
         if (recipeMap.containsKey(id)) {
             recipeMap.put((id), recipe);
             writeDataToFile(recipeMap);
             return recipe;
         }
-        return null;
+        throw new ExceptionForRecipe("Такого рецепта нет!");
     }
 
     @Override
-    public Recipe remove(long id) {
-        Recipe recipe = recipeMap.remove(id);
-        writeDataToFile(recipeMap);
-        return recipe;
+    public Recipe remove(long id) throws ExceptionForRecipe {
+        if (recipeMap.containsKey(id)) {
+            Recipe recipe = recipeMap.remove(id);
+            writeDataToFile(recipeMap);
+            return recipe;
+        }
+        throw new ExceptionForRecipe("Такого рецепта нет!");
     }
 
     @Override
@@ -113,7 +127,7 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public void importRecipes(MultipartFile recipes) {
+    public void importRecipes(MultipartFile recipes) throws ExceptionForRecipe {
         try {
             Map<Long, Recipe> mapFromRequest = objectMapper.readValue(recipes.getBytes(),
                     new TypeReference<>() {
@@ -121,6 +135,7 @@ public class RecipeServiceImpl implements RecipeService {
             writeDataToFile(mapFromRequest);
         } catch (IOException e) {
             e.printStackTrace();
+            throw new ExceptionForRecipe("Ошибка загрузки рецептов из json");
         }
     }
 
