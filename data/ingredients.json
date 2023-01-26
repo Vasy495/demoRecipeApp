@@ -1,0 +1,22 @@
+{
+  "0": {
+    "title": "лук",
+    "quantity": 0,
+    "measuringUnit": "string"
+  },
+  "1": {
+    "title": "string",
+    "quantity": 0,
+    "measuringUnit": "string"
+  },
+  "2": {
+    "title": "string",
+    "quantity": 0,
+    "measuringUnit": "string"
+  },
+  "3": {
+    "title": "string",
+    "quantity": 0,
+    "measuringUnit": "string"
+  }
+}
